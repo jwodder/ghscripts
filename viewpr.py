@@ -1,21 +1,13 @@
 #!/usr/bin/env -S pipx run
-"""
-Determines the GitHub pull request created from the current branch in the local
-repository and opens it in a web browser
-"""
-
 # /// script
 # requires-python = ">=3.8"
 # dependencies = ["ghrepo ~= 0.5", "ghreq ~= 0.1", "ghtoken ~= 0.1"]
 # ///
 
-# TODO:
-# - Add an option for just printing out various details about the PR (number,
-#   title, state, repositories, URL?) instead of opening it
-# - Add an option for specifying the branch
-# - Add an option for specifying the head repository (the one the PR is coming
-#   from)
-#  - Will require also specifying the branch
+"""
+Determines the GitHub pull request created from the current branch in the local
+repository and opens it in a web browser
+"""
 
 from __future__ import annotations
 import sys

@@ -9,11 +9,6 @@ Script for showing reactions on open issues & PRs in repositories owned by the
 ghtoken-configured GitHub user
 """
 
-# TODO:
-# - Support operating on repositories listed on the command line
-#  - Support passing "owner/*" to operate on all non-fork, non-archive repos
-#    owned by `owner`
-
 from __future__ import annotations
 from collections.abc import Iterator
 from dataclasses import dataclass

@@ -1,10 +1,4 @@
 #!/usr/bin/env -S pipx run
-# TODO:
-# - When running on a local repo, compare against local branches somehow?
-# - Add an option for not showing any branches that exist on the source?
-#   (possibly aside from the default branch?)
-# - Support globs in repo argument
-
 # /// script
 # requires-python = ">=3.8"
 # dependencies = [
