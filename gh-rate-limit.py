@@ -10,6 +10,11 @@ from datetime import datetime, timezone
 from ghreq import Client
 from ghtoken import get_ghtoken
 
+__author__ = "John Thorvald Wodder II"
+__author_email__ = "ghscripts@varonathe.org"
+__license__ = "MIT"
+__url__ = "https://github.com/jwodder/ghscripts"
+
 
 def main() -> None:
     parser = argparse.ArgumentParser(

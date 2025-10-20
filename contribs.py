@@ -25,6 +25,11 @@ from ghtoken import get_ghtoken
 import requests
 from txtble import Txtble
 
+__author__ = "John Thorvald Wodder II"
+__author_email__ = "ghscripts@varonathe.org"
+__license__ = "MIT"
+__url__ = "https://github.com/jwodder/ghscripts"
+
 log = logging.getLogger()
 
 GRAPHQL_API_URL = "https://api.github.com/graphql"

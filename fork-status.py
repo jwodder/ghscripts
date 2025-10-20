@@ -19,6 +19,11 @@ from ghtoken import get_ghtoken
 from github import Auth, Github, GithubException
 from github.Repository import Repository
 
+__author__ = "John Thorvald Wodder II"
+__author_email__ = "ghscripts@varonathe.org"
+__license__ = "MIT"
+__url__ = "https://github.com/jwodder/ghscripts"
+
 
 @click.command(context_settings={"help_option_names": ["-h", "--help"]})
 @click.option("--all", "list_all", is_flag=True)
