@@ -136,13 +136,7 @@ def get_branch_statuses(repo: Repository) -> Iterator[BranchStatus]:
             pr = next(
                 iter(
                     repo.parent.get_pulls(
-                        head=f"{repo.full_name}:{br.name}",
-                        # We need to include the full name in the `head` for
-                        # the cases where one of the repositories has been
-                        # renamed, in which case just doing
-                        # `f"{repo.owner.login}:{br.name}"` will return an
-                        # empty list.  The ability to use the full name in the
-                        # `head` isn't even documented!
+                        head=f"{repo.owner.login}:{br.name}",
                         sort="created",
                         direction="desc",
                         state="all",
