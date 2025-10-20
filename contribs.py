@@ -10,11 +10,6 @@
 # ]
 # ///
 
-"""
-Show a table of the number of commits made to GitHub repositories over the past
-N days
-"""
-
 from __future__ import annotations
 from collections.abc import Iterator
 from dataclasses import dataclass, field
@@ -200,10 +195,23 @@ class ContribTabulator:
         return tbl.show()
 
 
-@click.command()
-@click.option("-d", "--days", type=int, default=7)
-@click.option("-H", "--highlight", is_flag=True)
+@click.command(context_settings={"help_option_names": ["-h", "--help"]})
+@click.option(
+    "-d",
+    "--days",
+    type=int,
+    default=7,
+    show_default=True,
+    help="How many days back to show",
+)
+@click.option(
+    "-H", "--highlight", is_flag=True, help="Color alternating rows of the table"
+)
 def main(days: int, highlight: bool) -> None:
+    """
+    Show a table of the number of commits made to GitHub repositories over the
+    past several days
+    """
     tz = gettz()
     end_date = date.today()
     start_date = end_date - timedelta(days=days - 1)
@@ -216,8 +224,7 @@ def main(days: int, highlight: bool) -> None:
     if highlight:
         lines = s.splitlines()
         for i in range(4, len(lines) - 1, 2):
-            inner = lines[i].removeprefix("|").removesuffix("|")
-            lines[i] = f"|\x1b[30;48;5;227m{inner}\x1b[m|"
+            lines[i] = f"|\x1b[30;48;5;227m{lines[i][1:-1]}\x1b[m|"
         s = "\n".join(lines)
     print(s)
 

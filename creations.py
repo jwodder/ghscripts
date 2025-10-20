@@ -28,13 +28,18 @@ class DateArg(click.ParamType):
         else:
             return value
 
-    def get_metavar(self, _param: click.Parameter) -> str:
-        return "DATE"
+    def get_metavar(self, param: click.Parameter, ctx: click.Context) -> str:
+        return "YYYY-MM-DD"
 
 
 @click.command(context_settings={"help_option_names": ["-h", "--help"]})
-@click.option("--since", type=DateArg())
+@click.option(
+    "--since",
+    type=DateArg(),
+    help="The earliest date for which to show events [default: yesterday]",
+)
 def main(since: date | None) -> None:
+    """List various actions performed on GitHub since a given date"""
     if since is None:
         since_dt = datetime.now(timezone.utc) - timedelta(days=1)
     else:

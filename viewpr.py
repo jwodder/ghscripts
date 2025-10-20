@@ -4,12 +4,8 @@
 # dependencies = ["ghrepo ~= 0.5", "ghreq ~= 0.1", "ghtoken ~= 0.1"]
 # ///
 
-"""
-Determines the GitHub pull request created from the current branch in the local
-repository and opens it in a web browser
-"""
-
 from __future__ import annotations
+import argparse
 import sys
 import webbrowser
 import ghrepo
@@ -18,6 +14,13 @@ from ghtoken import get_ghtoken
 
 
 def main() -> None:
+    parser = argparse.ArgumentParser(
+        description=(
+            "Open the GitHub pull request created from the local branch in a"
+            " web browser"
+        )
+    )
+    parser.parse_args()
     local = ghrepo.get_local_repo()
     branch = ghrepo.get_current_branch()
     with Client(token=get_ghtoken()) as client:

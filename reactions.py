@@ -4,12 +4,8 @@
 # dependencies = ["ghreq ~= 0.1", "ghtoken ~= 0.1"]
 # ///
 
-"""
-Script for showing reactions on open issues & PRs in repositories owned by the
-ghtoken-configured GitHub user
-"""
-
 from __future__ import annotations
+import argparse
 from collections.abc import Iterator
 from dataclasses import dataclass
 from enum import Enum
@@ -79,7 +75,11 @@ class Issue:
         return " ".join(strs)
 
 
-if __name__ == "__main__":
+def main() -> None:
+    parser = argparse.ArgumentParser(
+        description="Show reactions on open issues & PRs in your GitHub repositories"
+    )
+    parser.parse_args()
     with Client(token=get_ghtoken()) as client:
         for repo in client.get_repositories():
             for issue in client.get_issue_reactions(repo):
@@ -88,3 +88,7 @@ if __name__ == "__main__":
                     print("URL:", issue.url)
                     print("Reactions:", issue.reaction_str())
                     print()
+
+
+if __name__ == "__main__":
+    main()
