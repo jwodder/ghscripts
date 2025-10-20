@@ -1,7 +1,7 @@
 #!/usr/bin/env -S pipx run
 # /// script
 # requires-python = ">=3.11"
-# dependencies = ["click >= 8.0", "ghreq ~= 0.1", "ghtoken ~= 0.1"]
+# dependencies = ["click ~= 8.2", "ghreq ~= 0.1", "ghtoken ~= 0.1"]
 # ///
 
 from __future__ import annotations
