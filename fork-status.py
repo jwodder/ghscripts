@@ -26,10 +26,28 @@ __url__ = "https://github.com/jwodder/ghscripts"
 
 
 @click.command(context_settings={"help_option_names": ["-h", "--help"]})
-@click.option("--all", "list_all", is_flag=True)
-@click.option("-B", "--all-branches", is_flag=True)
-@click.option("--has-pr/--no-pr", default=None)
-@click.option("--pr-status", type=click.Choice(["open", "closed", "merged"]))
+@click.option(
+    "--all",
+    "list_all",
+    is_flag=True,
+    help="Operate on all forks owned by the authenticated user",
+)
+@click.option(
+    "-B",
+    "--all-branches",
+    is_flag=True,
+    help="List all branches on forks, not just those that differ from upstream",
+)
+@click.option(
+    "--has-pr/--no-pr",
+    default=None,
+    help="Only show branches that do/don't have pull requests",
+)
+@click.option(
+    "--pr-status",
+    type=click.Choice(["open", "closed", "merged"]),
+    help="Only show branches with the given PR status",
+)
 @click.argument("repo", nargs=-1)
 def main(
     repo: tuple[str, ...],
@@ -38,6 +56,31 @@ def main(
     has_pr: bool | None,
     pr_status: str | None,
 ) -> None:
+    """
+    Describe the branch statuses of one or more GitHub repository forks.
+
+    If the `--all` option is given, `fork-status` will operate on all forks
+    owned by the authenticated GitHub user.  Otherwise, if any repositories (in
+    the form "OWNER/NAME") are given on the command line, `fork-status` will
+    operate on those.  Otherwise, `fork-status` will operate on the Git
+    repository for the current working directory.
+
+    For each fork, each branch that differs from the parent repository is
+    printed out in a line containing the following items:
+
+    - A plus sign (+) if the branch does not exist on the parent repository
+
+    - The name of the branch
+
+    - The number of commits by which the branch is ahead of and/or behind the
+      corresponding branch on the parent repository (defaulting to the parent
+      repository's default branch)
+
+    - The number of the pull request for the branch, if any
+
+    - The status of the pull request for the branch, if any ("OPEN", "CLOSED",
+      or "MERGED")
+    """
     gh = Github(auth=Auth.Token(get_ghtoken()))
     repo_objs: Iterable[Repository]
     if list_all:
@@ -51,6 +94,9 @@ def main(
     for i, r in enumerate(repo_objs):
         if i:
             print()
+        if not r.fork:
+            print(f"{r.full_name}: not a fork")
+            continue
         header = f"{r.full_name} → {r.parent.full_name}"
         print(header)
         print("-" * len(header))

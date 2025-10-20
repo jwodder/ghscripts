@@ -38,11 +38,9 @@ Run a given script with the `-h` or `--help` option for more information.
   - Opening, closing, or reopening an issue or pull request
   - Publishing a release
 
-- `fork-status.py` — For each GitHub repository in a given set of forks (either
-  the Git repository in the current working directory, a list of forks on the
-  command line, or all forks owned by your user account), print all branches
-  that differ from the parent repository and, if they have a corresponding PR,
-  print the PR number and PR status ("OPEN", "CLOSED", or "MERGED")
+- `fork-status.py` — For each GitHub repository in a given set of forks, print
+  all branches that differ from the parent repository along with the
+  corresponding PR number and PR status, if any
 
 - `gh-rate-limit.py` — For each rate-limited GitHub API resource in your user
   account that is not at "full," show the number of resources used, remaining,
