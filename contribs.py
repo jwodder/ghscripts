@@ -216,6 +216,12 @@ def main(days: int, highlight: bool) -> None:
     """
     Show a table of the number of commits per repository per day made to GitHub
     repositories over the past several days
+
+    This script requires a GitHub access token with appropriate permissions in
+    order to run.  Specify the token via the `GH_TOKEN` or `GITHUB_TOKEN`
+    environment variable (possibly in an `.env` file), by storing a token with
+    the `gh` or `hub` command, or by setting the `hub.oauthtoken` Git config
+    option in your `~/.gitconfig` file.
     """
     tz = gettz()
     end_date = date.today()

@@ -80,6 +80,12 @@ def main(
 
     - The status of the pull request for the branch, if any ("OPEN", "CLOSED",
       or "MERGED")
+
+    This script requires a GitHub access token with appropriate permissions in
+    order to run.  Specify the token via the `GH_TOKEN` or `GITHUB_TOKEN`
+    environment variable (possibly in an `.env` file), by storing a token with
+    the `gh` or `hub` command, or by setting the `hub.oauthtoken` Git config
+    option in your `~/.gitconfig` file.
     """
     gh = Github(auth=Auth.Token(get_ghtoken()))
     repo_objs: Iterable[Repository]

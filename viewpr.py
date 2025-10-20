@@ -23,7 +23,16 @@ def main() -> None:
         description=(
             "Open the GitHub pull request created from the local branch in a"
             " web browser"
-        )
+        ),
+        epilog=(
+            """
+            This script requires a GitHub access token with appropriate permissions in
+            order to run.  Specify the token via the `GH_TOKEN` or `GITHUB_TOKEN`
+            environment variable (possibly in an `.env` file), by storing a token with
+            the `gh` or `hub` command, or by setting the `hub.oauthtoken` Git config
+            option in your `~/.gitconfig` file.
+            """
+        ),
     )
     parser.parse_args()
     local = ghrepo.get_local_repo()

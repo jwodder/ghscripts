@@ -44,7 +44,15 @@ class DateArg(click.ParamType):
     help="The earliest date for which to show events [default: yesterday]",
 )
 def main(since: date | None) -> None:
-    """List various actions performed on GitHub since a given date"""
+    """
+    List various actions performed on GitHub since a given date
+
+    This script requires a GitHub access token with appropriate permissions in
+    order to run.  Specify the token via the `GH_TOKEN` or `GITHUB_TOKEN`
+    environment variable (possibly in an `.env` file), by storing a token with
+    the `gh` or `hub` command, or by setting the `hub.oauthtoken` Git config
+    option in your `~/.gitconfig` file.
+    """
     if since is None:
         since_dt = datetime.now(timezone.utc) - timedelta(days=1)
     else:

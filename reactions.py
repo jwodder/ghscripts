@@ -82,7 +82,16 @@ class Issue:
 
 def main() -> None:
     parser = argparse.ArgumentParser(
-        description="Show reactions on open issues & PRs in your GitHub repositories"
+        description="Show reactions on open issues & PRs in your GitHub repositories",
+        epilog=(
+            """
+            This script requires a GitHub access token with appropriate permissions in
+            order to run.  Specify the token via the `GH_TOKEN` or `GITHUB_TOKEN`
+            environment variable (possibly in an `.env` file), by storing a token with
+            the `gh` or `hub` command, or by setting the `hub.oauthtoken` Git config
+            option in your `~/.gitconfig` file.
+            """
+        ),
     )
     parser.parse_args()
     with Client(token=get_ghtoken()) as client:
