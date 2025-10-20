@@ -209,8 +209,8 @@ class ContribTabulator:
 )
 def main(days: int, highlight: bool) -> None:
     """
-    Show a table of the number of commits made to GitHub repositories over the
-    past several days
+    Show a table of the number of commits per repository per day made to GitHub
+    repositories over the past several days
     """
     tz = gettz()
     end_date = date.today()
