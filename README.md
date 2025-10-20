@@ -24,6 +24,9 @@ the GitHub access token belongs.
 
 Run a given script with the `-h` or `--help` option for more information.
 
+- [`active.py`](/active.py) — List all active GitHub Actions workflow runs in
+  repositories owned by a given user
+
 - [`contribs.py`](/contribs.py) — Show a table of the number of commits per
   repository per day that your user account has made to GitHub repositories
   over the past several days
