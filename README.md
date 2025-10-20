@@ -24,12 +24,12 @@ the GitHub access token belongs.
 
 Run a given script with the `-h` or `--help` option for more information.
 
-- `contribs.py` — Show a table of the number of commits per repository per day
-  that your user account has made to GitHub repositories over the past several
-  days
+- [`contribs.py`](/contribs.py) — Show a table of the number of commits per
+  repository per day that your user account has made to GitHub repositories
+  over the past several days
 
-- `creations.py` — List various actions performed by your user account since a
-  given date.
+- [`creations.py`](/creations.py) — List various actions performed by your user
+  account since a given date.
 
   The types of actions shown are:
 
@@ -38,20 +38,21 @@ Run a given script with the `-h` or `--help` option for more information.
   - Opening, closing, or reopening an issue or pull request
   - Publishing a release
 
-- `fork-status.py` — For each GitHub repository in a given set of forks, print
-  all branches that differ from the parent repository along with the
-  corresponding PR number and PR status, if any
+- [`fork-status.py`](/fork-status.py) — For each GitHub repository in a given
+  set of forks, print all branches that differ from the parent repository along
+  with the corresponding PR number and PR status, if any
 
-- `gh-rate-limit.py` — For each rate-limited GitHub API resource in your user
-  account that is not at "full," show the number of resources used, remaining,
-  & total and the timestamp at which the usage will reset
+- [`gh-rate-limit.py`](/gh-rate-limit.py) — For each rate-limited GitHub API
+  resource in your user account that is not at "full," show the number of
+  resources used, remaining, & total and the timestamp at which the usage will
+  reset
 
-- `reactions.py` — List all issues & PRs in repositories owned by your user
-  account that people have reacted to
+- [`reactions.py`](/reactions.py) — List all issues & PRs in repositories owned
+  by your user account that people have reacted to
 
-- `viewpr.py` — Determine the GitHub pull request created from the current
-  branch in the Git repository in the current working directory and open it in
-  a web browser
+- [`viewpr.py`](/viewpr.py) — Determine the GitHub pull request created from
+  the current branch in the Git repository in the current working directory and
+  open it in a web browser
 
 See Also
 ========
