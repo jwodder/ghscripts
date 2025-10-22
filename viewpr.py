@@ -7,6 +7,7 @@
 from __future__ import annotations
 import argparse
 import sys
+import textwrap
 import webbrowser
 import ghrepo
 from ghreq import Client
@@ -20,12 +21,10 @@ __url__ = "https://github.com/jwodder/ghscripts"
 
 def main() -> None:
     parser = argparse.ArgumentParser(
-        description=(
-            "Open the GitHub pull request created from the local branch in a"
-            " web browser"
-        ),
-        epilog=(
+        description=textwrap.dedent(
             """
+            Open the GitHub pull request created from the local branch in a web browser
+
             This script requires a GitHub access token with appropriate permissions in
             order to run.  Specify the token via the `GH_TOKEN` or `GITHUB_TOKEN`
             environment variable (possibly in an `.env` file), by storing a token with
@@ -33,6 +32,7 @@ def main() -> None:
             option in your `~/.gitconfig` file.
             """
         ),
+        formatter_class=argparse.RawDescriptionHelpFormatter,
     )
     parser.parse_args()
     local = ghrepo.get_local_repo()

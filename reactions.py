@@ -9,6 +9,7 @@ import argparse
 from collections.abc import Iterator
 from dataclasses import dataclass
 from enum import Enum
+import textwrap
 import ghreq
 from ghtoken import get_ghtoken
 
@@ -82,9 +83,10 @@ class Issue:
 
 def main() -> None:
     parser = argparse.ArgumentParser(
-        description="Show reactions on open issues & PRs in your GitHub repositories",
-        epilog=(
+        description=textwrap.dedent(
             """
+            Show reactions on open issues & PRs in your GitHub repositories
+
             This script requires a GitHub access token with appropriate permissions in
             order to run.  Specify the token via the `GH_TOKEN` or `GITHUB_TOKEN`
             environment variable (possibly in an `.env` file), by storing a token with
@@ -92,6 +94,7 @@ def main() -> None:
             option in your `~/.gitconfig` file.
             """
         ),
+        formatter_class=argparse.RawDescriptionHelpFormatter,
     )
     parser.parse_args()
     with Client(token=get_ghtoken()) as client:
