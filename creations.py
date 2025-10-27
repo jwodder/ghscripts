@@ -34,7 +34,7 @@ class DateArg(click.ParamType):
             return value
 
     def get_metavar(
-        self, param: click.Parameter, ctx: click.Context | None = None
+        self, param: click.Parameter, ctx: click.Context | None = None  # noqa: U100
     ) -> str:
         return "YYYY-MM-DD"
 
