@@ -4,8 +4,8 @@
 # dependencies = [
 #    "click ~= 8.0",
 #    "ghtoken ~= 0.1",
+#    "ghreq ~= 0.6",
 #    "python-dateutil ~= 2.9",
-#    "requests ~= 2.20",
 #    "txtble ~= 0.12",
 # ]
 # ///
@@ -15,29 +15,17 @@ from collections.abc import Iterator
 from dataclasses import dataclass, field
 from datetime import date, datetime, time, timedelta, tzinfo
 import json
-import logging
-from time import sleep
-from types import TracebackType
 from typing import Any
 import click
 from dateutil.tz import gettz
+import ghreq
 from ghtoken import get_ghtoken
-import requests
 from txtble import Txtble
 
 __author__ = "John Thorvald Wodder II"
 __author_email__ = "ghscripts@varonathe.org"
 __license__ = "MIT"
 __url__ = "https://github.com/jwodder/ghscripts"
-
-log = logging.getLogger()
-
-GRAPHQL_API_URL = "https://api.github.com/graphql"
-
-MAX_RETRIES = 5
-RETRY_STATUSES = (500, 502, 503, 504)
-BACKOFF_FACTOR = 1.25
-MAX_BACKOFF = 120
 
 REPO_QTY_GUESS = 10
 
@@ -60,53 +48,12 @@ query ($from: DateTime!, $to: DateTime!, $maxRepositories: Int!) {
 """
 
 
-class Client:
-    def __init__(self, token: str) -> None:
-        self.s = requests.Session()
-        self.s.headers["Authorization"] = f"bearer {token}"
-
-    def __enter__(self) -> Client:
-        return self
-
-    def __exit__(
-        self,
-        _exc_type: type[BaseException] | None,
-        _exc_val: BaseException | None,
-        _exc_tb: TracebackType | None,
-    ) -> None:
-        self.s.close()
-
+class Client(ghreq.Client):
     def query(self, query: str, variables: dict[str, Any]) -> dict:
-        i = 0
-        while True:
-            r = self.s.post(
-                GRAPHQL_API_URL,
-                json={"query": query, "variables": variables},
-            )
-            if r.status_code in RETRY_STATUSES:
-                if i + 1 < MAX_RETRIES:
-                    delay = min(BACKOFF_FACTOR * 2**i, MAX_BACKOFF)
-                    log.warning(
-                        "GraphQL request returned %d; waiting %f seconds and retrying",
-                        r.status_code,
-                        delay,
-                    )
-                    sleep(delay)
-                    i += 1
-                    continue
-                else:
-                    log.error(
-                        "GraphQL request returned %d; out of retries", r.status_code
-                    )
-                    raise APIException(r)
-            elif not r.ok:
-                raise APIException(r)
-            else:
-                break
-        data = r.json()
-        if data.get("errors"):
-            raise APIException(r)
-        return r.json()["data"]  # type: ignore[no-any-return]
+        data = self.graphql(query, variables)
+        if err := data.get("errors"):
+            raise GraphQLException(err)
+        return data["data"]  # type: ignore[no-any-return]
 
     def get_contributions(self, from_dt: datetime, to_dt: datetime) -> dict[str, int]:
         # Note: Batching the requests doesn't speed things up.  I tried.
@@ -139,28 +86,35 @@ class Client:
         }
 
 
-class APIException(Exception):
-    def __init__(self, response: requests.Response) -> None:
-        self.response = response
-        super().__init__(response)
+class GraphQLException(Exception):
+    def __init__(self, errors: list[dict[str, Any]]) -> None:
+        self.errors = errors
+        super().__init__(errors)
 
     def __str__(self) -> str:
-        if self.response.ok:
-            msg = "GraphQL API error for URL: {0.url}\n"
-        elif 400 <= self.response.status_code < 500:
-            msg = "{0.status_code} Client Error: {0.reason} for URL: {0.url}\n"
-        elif 500 <= self.response.status_code < 600:
-            msg = "{0.status_code} Server Error: {0.reason} for URL: {0.url}\n"
-        else:
-            msg = "{0.status_code} Unknown Error: {0.reason} for URL: {0.url}\n"
-        msg = msg.format(self.response)
         try:
-            resp = self.response.json()
-        except ValueError:
-            msg += self.response.text
-        else:
-            msg += json.dumps(resp, sort_keys=True, indent=4)
-        return msg
+            lines = []
+            if len(self.errors) == 1:
+                lines.append("GraphQL API error:")
+            else:
+                lines.append("GraphQL API errors:")
+            first = True
+            for e in self.errors:
+                if first:
+                    first = False
+                else:
+                    lines.append("---")
+                for k, v in e.items():
+                    k = k.title()
+                    if isinstance(v, str | int | bool):
+                        lines.append(f"{k}: {v}")
+                    else:
+                        lines.append(k + ": " + json.dumps(v, sort_keys=True))
+            return "\n".join(lines)
+        except Exception:
+            return "MALFORMED GRAPHQL ERROR:\n" + json.dumps(
+                self.errors, sort_keys=True, indent=True
+            )
 
 
 @dataclass
