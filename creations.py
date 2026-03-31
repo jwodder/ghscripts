@@ -1,12 +1,15 @@
 #!/usr/bin/env -S pipx run
 # /// script
 # requires-python = ">=3.11"
-# dependencies = ["click >= 8.0", "ghreq ~= 0.1", "ghtoken ~= 0.1"]
+# dependencies = ["ghreq ~= 0.1", "ghtoken ~= 0.1"]
 # ///
 
 from __future__ import annotations
+import argparse
+from collections.abc import Sequence
 from datetime import date, datetime, time, timedelta, timezone
-import click
+import textwrap
+from typing import Any
 from ghreq import Client
 from ghtoken import get_ghtoken
 
@@ -16,54 +19,60 @@ __license__ = "MIT"
 __url__ = "https://github.com/jwodder/ghscripts"
 
 
-class DateArg(click.ParamType):
-    name = "date"
-
-    def convert(
+class DaysAgo(argparse.Action):
+    def __call__(
         self,
-        value: str | date,
-        param: click.Parameter | None,
-        ctx: click.Context | None,
-    ) -> date:
-        if isinstance(value, str):
-            try:
-                return date.fromisoformat(value)
-            except ValueError as e:
-                self.fail(str(e), param, ctx)
-        else:
-            return value
-
-    def get_metavar(
-        self, param: click.Parameter, ctx: click.Context | None = None  # noqa: U100
-    ) -> str:
-        return "YYYY-MM-DD"
+        _parser: argparse.ArgumentParser,
+        namespace: argparse.Namespace,
+        value: str | Sequence[Any] | None,
+        _option_string: str | None = None,
+    ) -> None:
+        if not isinstance(value, str):
+            raise TypeError(value)  # pragma: no cover
+        days = int(value)
+        if days < 1:
+            raise ValueError("--days argument must be positive")
+        namespace.since = days_ago(days)
 
 
-@click.command(context_settings={"help_option_names": ["-h", "--help"]})
-@click.option(
-    "--since",
-    type=DateArg(),
-    help="The earliest date for which to show events [default: yesterday]",
-)
-def main(since: date | None) -> None:
-    """
-    List various actions performed on GitHub since a given date
+def days_ago(days: int) -> date:
+    return datetime.now(timezone.utc) - timedelta(days=days)
 
-    This script requires a GitHub access token with appropriate permissions in
-    order to run.  Specify the token via the `GH_TOKEN` or `GITHUB_TOKEN`
-    environment variable (possibly in an `.env` file), by storing a token with
-    the `gh` or `hub` command, or by setting the `hub.oauthtoken` Git config
-    option in your `~/.gitconfig` file.
-    """
-    if since is None:
-        since_dt = datetime.now(timezone.utc) - timedelta(days=1)
-    else:
-        since_dt = datetime.combine(since, time.min).astimezone()
+
+def main() -> None:
+    parser = argparse.ArgumentParser(
+        description=textwrap.dedent(
+            """
+            List various actions performed on GitHub since a given date
+
+            This script requires a GitHub access token with appropriate permissions in
+            order to run.  Specify the token via the `GH_TOKEN` or `GITHUB_TOKEN`
+            environment variable (possibly in an `.env` file), by storing a token with
+            the `gh` or `hub` command, or by setting the `hub.oauthtoken` Git config
+            option in your `~/.gitconfig` file.
+            """
+        ),
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+    )
+    parser.add_argument(
+        "--since",
+        type=lambda s: datetime.combine(date.fromisoformat(s), time.min).astimezone(),
+        metavar="YYYY-MM-DD",
+        help="The earliest date for which to show events [default: yesterday]",
+        default=days_ago(1),
+    )
+    parser.add_argument(
+        "-d",
+        "--days",
+        action=DaysAgo,
+        help="How many days back to show events; overrides --since",
+    )
+    args = parser.parse_args()
     with Client(token=get_ghtoken()) as client:
         whoami = client.get("/user")["login"]
         for ev in client.paginate(f"/users/{whoami}/events"):
             created = datetime.fromisoformat(ev["created_at"])
-            if created < since_dt:
+            if created < args.since:
                 break
             ts = created.astimezone().strftime("%Y-%m-%d %H:%M")
             repo = ev["repo"]["name"]
