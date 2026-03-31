@@ -80,13 +80,11 @@ def main(since: date | None) -> None:
                     print(f"[{ts}] {action.title()} issue {repo}#{number}: {title}")
                 case ("PullRequestEvent", "opened" | "closed" | "reopened"):
                     prdata = ev["payload"]["pull_request"]
-                    if action == "closed" and prdata["merged"]:
+                    fullpr = client.get(prdata["url"])
+                    if action == "closed" and fullpr["merged"]:
                         action = "merged"
                     number = prdata["number"]
-                    # Removed from payload as part of
-                    # <https://github.blog/changelog/2025-08-08-upcoming-changes-to-github-events-api-payloads/>
-                    # title = prdata["title"]
-                    title = client.get(prdata["url"])["title"]
+                    title = fullpr["title"]
                     print(f"[{ts}] {action.title()} PR {repo}#{number}: {title}")
                 case ("ReleaseEvent", "published"):
                     tag = ev["payload"]["release"]["tag_name"]
