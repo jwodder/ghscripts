@@ -68,3 +68,4 @@ interacting with the GitHub API:
 - [labelmaker](https://github.com/jwodder/labelmaker)
 - [mkissues](https://github.com/jwodder/mkissues)
 - [repolist](https://github.com/jwodder/repolist)
+- [reponews](https://github.com/jwodder/reponews)
